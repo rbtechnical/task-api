@@ -1,28 +1,36 @@
-const request = require('supertest');
-const app = require('../server');
+const express = require('express');
+const app = express();
 
-describe('Task API', () => {
-  it('health check returns 200', async () => {
-    const res = await request(app).get('/health');
-    expect(res.statusCode).toBe(200);
-  });
+app.use(express.json());
 
-  it('rejects a task with no title', async () => {
-    const res = await request(app).post('/tasks').send({});
-    expect(res.statusCode).toBe(400);
-  });
+let tasks = [];
 
-  it('creates a task', async () => {
-    const res = await request(app).post('/tasks').send({ title: 'write tests' });
-    expect(res.statusCode).toBe(201);
-    expect(res.body.title).toBe('write tests');
-    expect(res.body.done).toBe(false);
-  });
-
-  it('marks a task done', async () => {
-    const created = await request(app).post('/tasks').send({ title: 'ship it' });
-    const res = await request(app).patch(`/tasks/${created.body.id}/done`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body.done).toBe(true);
-  });
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
+
+app.post('/tasks', (req, res) => {
+  const { title } = req.body;
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+  const newTask = { id: tasks.length + 1, title: title.trim(), done: false };
+  tasks.push(newTask);
+  res.status(201).json(newTask);
+});
+
+app.patch('/tasks/:id/done', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const task = tasks.find(t => t.id === id);
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+  task.done = true;
+  res.status(200).json(task);
+});
+
+if (require.main === module) {
+  app.listen(3000, () => console.log('Server running on port 3000'));
+}
+
+module.exports = app;
