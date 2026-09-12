@@ -36,3 +36,9 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/task-api --all-tags
+
+          - name: Run tests
+        
+          run: npm test
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
