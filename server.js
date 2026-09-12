@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 
@@ -34,3 +36,13 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
+   const API_KEY = process.env.API_KEY;
+
+   app.use((req, res, next) => {
+     if (req.path === '/health') return next(); // health check stays open
+     if (req.headers['x-api-key'] !== API_KEY) {
+       return res.status(401).json({ error: 'unauthorized' });
+     }
+     next();
+   });

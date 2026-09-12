@@ -1,5 +1,7 @@
-﻿const request = require('supertest');
+﻿process.env.API_KEY = 'test-key';
+const request = require('supertest');
 const app = require('../server');
+const res = request(app).get('/tasks').set('x-api-key', 'test-key');
 
 describe('Task API', () => {
   it('health check returns 200', async () => {
