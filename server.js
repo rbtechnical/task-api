@@ -1,9 +1,21 @@
-require('dotenv').config();
-
 const express = require('express');
 const app = express();
+require('dotenv').config();
 
 app.use(express.json());
+
+const API_KEY = process.env.API_KEY;
+
+app.use((req, res, next) => {
+  if (req.path === '/health') return next(); // health check stays open
+
+  console.log('Request Headers:', req.headers); // Log the request headers for debugging
+  if (req.headers['x-api-key'] !== API_KEY) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  next();
+});
+
 
 let tasks = [];
 
@@ -36,13 +48,3 @@ if (require.main === module) {
 }
 
 module.exports = app;
-
-   const API_KEY = process.env.API_KEY;
-
-   app.use((req, res, next) => {
-     if (req.path === '/health') return next(); // health check stays open
-     if (req.headers['x-api-key'] !== API_KEY) {
-       return res.status(401).json({ error: 'unauthorized' });
-     }
-     next();
-   });
