@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 let tasks = [];
 
    app.get('/health', (req, res) => {
-     res.status(200).json({ status: 'ok', version: '1.1' });
+     res.status(200).json({ status: 'ok', version: '1.2' });
    });
 
 app.get('/tasks', (req, res) => {

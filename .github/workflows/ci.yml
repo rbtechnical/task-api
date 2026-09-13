@@ -45,3 +45,16 @@ jobs:
          sleep 3
          curl -f http://localhost:3000/health
          docker stop verify
+
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull yourusername/task-api:latest
+            docker stop task-api || true
+            docker rm task-api || true
+            docker run -d -p 3000:3000 -e API_KEY=vm-test-key --name task-api rbtechnical/task-api:latest
