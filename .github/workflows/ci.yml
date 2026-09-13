@@ -38,3 +38,10 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/task-api --all-tags
+
+      - name: Verify pushed image runs
+        run: |
+         docker run -d -p 3000:3000 --name verify ${{ secrets.DOCKERHUB_USERNAME }}/task-api:${{ github.sha }}
+         sleep 3
+         curl -f http://localhost:3000/health
+         docker stop verify
