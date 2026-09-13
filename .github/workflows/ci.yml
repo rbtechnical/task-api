@@ -54,7 +54,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull yourusername/task-api:latest
+            docker pull rbtechnical/task-api:latest
             docker stop task-api || true
             docker rm task-api || true
             docker run -d -p 3000:3000 -e API_KEY=vm-test-key --name task-api rbtechnical/task-api:latest
