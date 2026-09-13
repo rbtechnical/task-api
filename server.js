@@ -23,6 +23,10 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+app.get('/tasks', (req, res) => {
+  res.status(200).json(tasks);
+});
+
 app.post('/tasks', (req, res) => {
   const { title } = req.body;
   if (!title || typeof title !== 'string' || !title.trim()) {
